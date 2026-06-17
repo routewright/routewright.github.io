@@ -1,0 +1,208 @@
+{{ define "main" }}
+{{ $gh := partialCached "gh-data" . }}
+{{ $repoURL := printf "https://github.com/%s/%s" .Site.Params.ghOwner .Site.Params.ghRepo }}
+
+<!-- ───────────────── hero ───────────────── -->
+<section class="hero wrap">
+  <div class="hero__grid">
+    <div class="hero__copy">
+      <p class="hero__tag"><span class="dot"></span> Kubernetes CNI · standard Linux only</p>
+      <h1>Kubernetes networking that shows up in <span class="em">show&nbsp;route</span>.</h1>
+      <p class="hero__sub">
+        Routewright runs your cluster network the way you run the rest of your network:
+        <b>BGP to the fabric, routed pods, ECMP with BFD failover.</b>
+        No eBPF. No overlay. No black boxes.
+      </p>
+      <div class="hero__cta">
+        <a class="btn btn--primary" href="{{ $repoURL }}" rel="noopener">
+          View on GitHub <span class="arrow">→</span>
+        </a>
+        <a class="btn" href="#how">How it works</a>
+      </div>
+      <p class="hero__meta">
+        <span><span class="x">·</span> Embedded GoBGP v4</span>
+        <span><span class="x">·</span> IPVS &amp; nftables dataplane</span>
+        <span><span class="x">·</span> Dual-stack, per-family sessions</span>
+      </p>
+    </div>
+
+    <div class="terminal" role="img" aria-label="Terminal output: the kernel routing table shows a BGP-learned ECMP default route across two top-of-rack switches, and GoBGP shows two established BFD-backed sessions.">
+      <div class="terminal__bar">
+        <div class="terminal__dots"><i></i><i></i><i></i></div>
+        <span class="terminal__title">node01 — the routing table, as it really is</span>
+      </div>
+      <div class="terminal__body">
+        <pre class="reveal-lines"><span class="ln" style="animation-delay:.05s"><span class="cmd">ip route show default</span></span><span class="ln" style="animation-delay:.20s">default <span class="dim">proto bgp metric 20</span></span><span class="ln" style="animation-delay:.30s">    nexthop <span class="via">via</span> <span class="pfx">10.42.0.1</span> dev eth0 weight 1</span><span class="ln" style="animation-delay:.40s">    nexthop <span class="via">via</span> <span class="pfx">10.42.1.1</span> dev eth1 weight 1</span><span class="gap"></span><span class="ln" style="animation-delay:.65s"><span class="cmd">gobgp neighbor</span></span><span class="ln" style="animation-delay:.80s"><span class="dim">Peer         AS     Up/Down   State     BFD</span></span><span class="ln" style="animation-delay:.90s"><span class="pfx">10.42.0.1</span>    65000  01:57:04  <span class="ok">Establ</span>    <span class="ok">up</span></span><span class="ln" style="animation-delay:1.0s"><span class="pfx">10.42.1.1</span>    65000  01:57:04  <span class="ok">Establ</span>    <span class="ok">up</span></span><span class="gap"></span><span class="ln" style="animation-delay:1.2s"><span class="dim"># uplink B drops — failover in ~1s, no overlay to debug</span></span></pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────────── stat strip ───────────────── -->
+<section aria-label="At a glance">
+  <div class="stats">
+    <div class="stat">
+      <div class="stat__num" data-gh="stars" {{ if not $gh.live }}data-pending{{ end }}>{{ if $gh.live }}{{ $gh.d.stargazers_count }}{{ end }}</div>
+      <div class="stat__label">GitHub stars</div>
+    </div>
+    <div class="stat">
+      <div class="stat__num">0</div>
+      <div class="stat__label">eBPF in the datapath</div>
+    </div>
+    <div class="stat">
+      <div class="stat__num">~1s</div>
+      <div class="stat__label">ECMP failover · BFD</div>
+    </div>
+    <div class="stat">
+      <div class="stat__num">4</div>
+      <div class="stat__label">binaries · one Go module</div>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────────── why ───────────────── -->
+<section class="section" id="why">
+  <div class="wrap fx">
+    <div class="cols">
+      <div>
+        <p class="kicker">§01 — Why</p>
+        <h2 class="heading">A network you can reason about.</h2>
+        <p class="lede">Most modern CNIs reach for eBPF and bespoke overlays — a datapath you debug with a decompiler.</p>
+      </div>
+      <div class="prose">
+        <p>Routewright takes the other road. It composes the routing, filtering, and load-balancing subsystems the Linux kernel has shipped for decades, and speaks BGP to your fabric the way a router does.</p>
+        <p>The result is a cluster network you can inspect with the tools already in your muscle memory — <code>ip route</code>, <code>nft</code>, <code>ipvsadm</code>, <code>tcpdump</code>, <code>gobgp</code>. A pod prefix is just another route in the RIB. A Service is just an IPVS virtual server. When something breaks at 3 a.m., the path is visible — not compiled away.</p>
+      </div>
+    </div>
+
+    <div class="cardgrid" style="margin-top:3rem">
+      <div class="card">
+        <div class="card__no">01 · routing</div>
+        <h3>The kernel FIB</h3>
+        <p>Pod and service prefixes advertised via BGP and programmed into the multipath FIB. No VXLAN, no encapsulation tax.</p>
+      </div>
+      <div class="card">
+        <div class="card__no">02 · load balancing</div>
+        <h3>IPVS for Services</h3>
+        <p>Real schedulers and connection tracking for ClusterIP, NodePort and LoadBalancer. Replaces kube-proxy entirely.</p>
+      </div>
+      <div class="card">
+        <div class="card__no">03 · filtering</div>
+        <h3>nftables policy</h3>
+        <p>NetworkPolicy compiled to <code>nft</code> sets and rules you can read — masquerade, mark and hairpin included.</p>
+      </div>
+      <div class="card">
+        <div class="card__no">04 · control plane</div>
+        <h3>Embedded GoBGP v4</h3>
+        <p>One speaker per node with BFD-driven sub-second ECMP failover. TCP-MD5 authenticated, per-family sessions.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────────── how it works ───────────────── -->
+<section class="section" id="how">
+  <div class="wrap fx">
+    <p class="kicker">§02 — How it works</p>
+    <h2 class="heading">The node owns its network identity — before Kubernetes exists.</h2>
+    <p class="lede" style="margin-bottom:2.5rem">A per-node daemon is the sole BGP speaker. It brings up the management IP over BGP, programs an ECMP default into the FIB, and pins kubelet's <code>--node-ip</code> — so the control plane has zero blast radius against node reachability.</p>
+
+    <div class="topo">
+      <svg viewBox="0 0 640 300" role="img" aria-label="Topology: two top-of-rack switches peer over eBGP and BFD with the per-node routewright-host daemon, which owns the management IP, the ECMP FIB, and the BGP sessions, and feeds the agent over a local socket.">
+        <!-- ToR A -->
+        <rect class="node" x="70" y="20" width="170" height="46" rx="5"/>
+        <text class="label" x="155" y="42" text-anchor="middle">ToR-A</text>
+        <text class="label label--dim" x="155" y="57" text-anchor="middle">AS 65000</text>
+        <!-- ToR B -->
+        <rect class="node" x="400" y="20" width="170" height="46" rx="5"/>
+        <text class="label" x="485" y="42" text-anchor="middle">ToR-B</text>
+        <text class="label label--dim" x="485" y="57" text-anchor="middle">AS 65000</text>
+
+        <!-- wires ToR -> host -->
+        <path class="wire wire--live" d="M155 66 L260 150"/>
+        <path class="wire wire--live" d="M485 66 L380 150"/>
+        <text class="label label--dim" x="178" y="118" text-anchor="middle">eBGP + BFD</text>
+        <text class="label label--dim" x="462" y="118" text-anchor="middle">eBGP + BFD</text>
+
+        <!-- host -->
+        <rect class="node node--host" x="120" y="150" width="400" height="64" rx="6"/>
+        <text class="label label--copper" x="320" y="176" text-anchor="middle">routewright-host · sole BGP speaker</text>
+        <text class="label label--dim" x="320" y="196" text-anchor="middle">mgmt IP · ECMP FIB · kubelet --node-ip</text>
+
+        <!-- wire host -> agent -->
+        <path class="wire" d="M320 214 L320 248"/>
+        <text class="label label--dim" x="392" y="236" text-anchor="middle">local gRPC</text>
+
+        <!-- agent -->
+        <rect class="node" x="180" y="248" width="280" height="40" rx="5"/>
+        <text class="label" x="320" y="272" text-anchor="middle">routewright-agent · pods / services / LB</text>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────────── invariants ───────────────── -->
+<section class="section" id="design">
+  <div class="wrap fx">
+    <div class="cols">
+      <div>
+        <p class="kicker">§03 — Load-bearing invariants</p>
+        <h2 class="heading">The decisions that keep nodes reachable.</h2>
+        <p class="lede">The management plane is immutable at runtime. The cluster can add peers and advertisements — it can never take a node off the network.</p>
+      </div>
+      <div class="specs">
+        <div class="spec">
+          <div class="spec__k">Immutable mgmt plane</div>
+          <div class="spec__v"><code>node.yaml</code> owns the management address. CRDs are strictly additive — never overriding it. SIGHUP reloads additive fields only.</div>
+        </div>
+        <div class="spec">
+          <div class="spec__k">BGP-driven failover</div>
+          <div class="spec__v">A peer going down sends no per-route withdrawal, so the watch loop prunes a downed peer's next-hops from the FIB. Measured ~1s with BFD.</div>
+        </div>
+        <div class="spec">
+          <div class="spec__k">Per-family sessions</div>
+          <div class="spec__v">Each session negotiates the AFI of its transport family. IPv6 NLRI over a v4 session yields a next-hop the kernel rejects — so dual-stack peers per family.</div>
+        </div>
+        <div class="spec">
+          <div class="spec__k">BFD on · GR off</div>
+          <div class="spec__v">On uplinks they conflict in GoBGP's in-process model. Planned stops drain via RFC&nbsp;8326 <code>GRACEFUL_SHUTDOWN</code> instead.</div>
+        </div>
+        <div class="spec">
+          <div class="spec__k">Authentication</div>
+          <div class="spec__v">TCP-MD5 on every session. GoBGP has no TCP-AO, so MD5 is the contract with the fabric.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────────── status ───────────────── -->
+<section class="section" id="status">
+  <div class="wrap fx">
+    <div class="cols">
+      <div>
+        <p class="kicker">§04 — Status</p>
+        <h2 class="heading">Early, and honest about it.</h2>
+      </div>
+      <div class="prose">
+        <p>Milestone <strong>M0a</strong> — the per-node BGP host daemon — is complete and proven end-to-end against real <code>gobgpd</code> top-of-rack switches across IPv4, IPv6 and dual-stack. The CNI proper — controller, agent, IPAM, services — is in progress.</p>
+        <p>Routewright is built for people who would rather operate a routing domain than trust a black box. If that's you, the roadmap is worth a read.</p>
+        <p style="margin-top:1.4rem"><a class="link" href="{{ "/roadmap/" | relURL }}">Read the roadmap <span class="arrow">→</span></a></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────────── cta ───────────────── -->
+<section class="section cta">
+  <div class="wrap fx">
+    <h2>Bring your routing table to your cluster.</h2>
+    <p class="lede">No eBPF. No overlay. Just BGP, the kernel FIB, IPVS and nftables — the network you already know how to operate.</p>
+    <div class="cta__row">
+      <a class="btn btn--primary" href="{{ $repoURL }}" rel="noopener">Star on GitHub <span class="arrow">→</span></a>
+      <a class="btn" href="{{ "/roadmap/" | relURL }}">Roadmap</a>
+      <a class="btn" href="{{ .Site.Params.docsURL }}">Documentation</a>
+    </div>
+  </div>
+</section>
+{{ end }}

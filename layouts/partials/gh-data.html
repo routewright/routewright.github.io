@@ -1,0 +1,29 @@
+{{- /* Build-time bake of GitHub repo metadata.
+       Authenticated with $GITHUB_TOKEN in CI to dodge rate limits.
+       Falls back to the data/github.json fixture when the repo is private,
+       missing, or the network is unavailable (current state pre-publish).
+       Returns: { live: bool, d: <repo dict> }.
+       Cached so the remote fetch happens once per build. */ -}}
+{{- $owner := .Site.Params.ghOwner -}}
+{{- $repo := .Site.Params.ghRepo -}}
+{{- $url := printf "https://api.github.com/repos/%s/%s" $owner $repo -}}
+{{- $d := hugo.Data.github -}}
+{{- $live := false -}}
+{{- $opts := dict "headers" (dict "Accept" "application/vnd.github+json") -}}
+{{- with getenv "GITHUB_TOKEN" -}}
+  {{- $opts = dict "headers" (dict "Accept" "application/vnd.github+json" "Authorization" (printf "Bearer %s" .)) -}}
+{{- end -}}
+{{- with resources.GetRemote $url $opts -}}
+  {{- if .Err -}}
+    {{- warnf "gh-data: fetch failed for %s (%s) — using fixture" $url .Err -}}
+  {{- else -}}
+    {{- $j := .Content | transform.Unmarshal -}}
+    {{- if and $j (isset $j "full_name") -}}
+      {{- $d = $j -}}
+      {{- $live = true -}}
+    {{- end -}}
+  {{- end -}}
+{{- else -}}
+  {{- warnf "gh-data: no response for %s — using fixture" $url -}}
+{{- end -}}
+{{- return (dict "live" $live "d" $d) -}}

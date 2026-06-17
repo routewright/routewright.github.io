@@ -1,0 +1,12 @@
+{
+  "full_name": "routewright/routewright",
+  "stargazers_count": 0,
+  "forks_count": 0,
+  "open_issues_count": 0,
+  "subscribers_count": 0,
+  "default_branch": "main",
+  "pushed_at": null,
+  "license": { "spdx_id": "Apache-2.0" },
+  "_fixture": true,
+  "_note": "Placeholder until routewright/routewright is public. Build-time bake and client-side JS both overwrite these with live values once the repo exists."
+}

@@ -1,0 +1,12 @@
+{{ define "main" }}
+<section class="wrap nf">
+  <div class="nf__code">404</div>
+  <p class="nf__msg"><span class="pfx">no route to host</span> — that prefix isn't in the table.</p>
+  <pre class="mono" style="color:var(--text-faint);font-size:.82rem;line-height:1.7">$ ip route get {{ "/" }}{{ "404" }}
+RTNETLINK answers: Network is unreachable</pre>
+  <div class="cta__row" style="margin-top:.5rem">
+    <a class="btn btn--primary" href="{{ "/" | relURL }}">Back to default route <span class="arrow">→</span></a>
+    <a class="btn" href="{{ "/roadmap/" | relURL }}">Roadmap</a>
+  </div>
+</section>
+{{ end }}

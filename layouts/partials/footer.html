@@ -1,0 +1,17 @@
+{{- $repoURL := printf "https://github.com/%s/%s" .Site.Params.ghOwner .Site.Params.ghRepo -}}
+<footer class="footer">
+  <div class="wrap footer__inner">
+    <a href="{{ "/" | relURL }}" class="footer__brand">routewright</a>
+    <nav class="footer__nav" aria-label="Footer">
+      <a href="{{ "/" | relURL }}#why">Why</a>
+      <a href="{{ "/" | relURL }}#how">How it works</a>
+      <a href="{{ "/roadmap/" | relURL }}">Roadmap</a>
+      <a href="{{ .Site.Params.docsURL }}">Docs</a>
+      <a href="{{ $repoURL }}" rel="noopener">GitHub</a>
+    </nav>
+    <p class="footer__note">
+      Routewright is a Kubernetes CNI built on standard Linux only — no eBPF, no overlay.
+      Apache-2.0. Early development; interfaces and roadmap may change.
+    </p>
+  </div>
+</footer>

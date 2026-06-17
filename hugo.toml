@@ -1,0 +1,42 @@
+baseURL = "https://routewright.io/"
+locale = "en-us"
+title = "Routewright"
+enableRobotsTXT = true
+enableGitInfo = false
+
+# We hand-roll everything; no taxonomies, no RSS noise on a 3-page marketing site.
+disableKinds = ["taxonomy", "term", "rss", "sitemap"]
+
+[params]
+  description = "A Kubernetes CNI built on standard Linux only — BGP to the fabric, routed pods, IPVS, nftables. No eBPF. No overlay. No black boxes."
+  tagline = "Kubernetes networking that shows up in `show route`."
+  # GitHub source of truth for the stat strip (build-time bake + client refresh).
+  ghOwner = "routewright"
+  ghRepo  = "routewright"
+  ghBranch = "main"
+  docsURL = "https://docs.routewright.io"
+
+[params.author]
+  name = "The Routewright Authors"
+
+[markup.goldmark.renderer]
+  unsafe = true
+
+[markup.highlight]
+  noClasses = false
+  lineNos = false
+
+[build]
+  writeStats = false
+
+# Allow the build-time GitHub stat bake: read $GITHUB_TOKEN and fetch the API.
+[security.funcs]
+  getenv = ['^HUGO_', '^CI$', '^GITHUB_TOKEN$']
+[security.http]
+  methods = ['(?i)GET']
+  urls = ['^https://api\.github\.com/']
+
+# Bundle + fingerprint our own CSS/JS; no external assets, ever.
+[minify]
+  disableHTML = false
+  minifyOutput = true
