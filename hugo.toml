@@ -8,7 +8,7 @@ enableGitInfo = false
 disableKinds = ["taxonomy", "term", "rss", "sitemap"]
 
 [params]
-  description = "A Kubernetes CNI built on standard Linux only — BGP to the fabric, routed pods, IPVS, nftables. No eBPF. No overlay. No black boxes."
+  description = "A Kubernetes CNI built on standard Linux only: BGP to the fabric, routed pods, IPVS, nftables. No eBPF. No overlay. No black boxes."
   tagline = "Kubernetes networking that shows up in `show route`."
   # GitHub source of truth for the stat strip (build-time bake + client refresh).
   ghOwner = "routewright"

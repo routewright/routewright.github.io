@@ -5,7 +5,7 @@
 
   {{ $title := .Title }}
   {{ $isHome := .IsHome }}
-  {{ $pageTitle := cond $isHome .Site.Title (printf "%s — %s" .Title .Site.Title) }}
+  {{ $pageTitle := cond $isHome .Site.Title (printf "%s · %s" .Title .Site.Title) }}
   {{ $desc := or .Description .Site.Params.description }}
 
   <title>{{ $pageTitle }}</title>

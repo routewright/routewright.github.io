@@ -1,6 +1,6 @@
 # routewright.io
 
-The marketing site for [Routewright](https://github.com/routewright/routewright) —
+The marketing site for [Routewright](https://github.com/routewright/routewright),
 a Kubernetes CNI built on standard Linux only (BGP, the kernel FIB, IPVS,
 nftables; no eBPF, no overlay).
 
@@ -14,7 +14,7 @@ hugo server          # live reload at http://localhost:1313
 hugo --gc --minify   # production build into ./public
 ```
 
-Requires Hugo (extended not strictly needed — CSS is hand-rolled, no Sass).
+Requires Hugo (extended not strictly needed since CSS is hand-rolled, no Sass).
 Pin matches CI: see `HUGO_VERSION` in `.github/workflows/deploy.yml`.
 
 ## Layout
@@ -36,15 +36,15 @@ static/                   fonts (self-hosted IBM Plex), CNAME, og.png, favicon
 
 Repo numbers are shown two ways, layered:
 
-- **Build time** — `layouts/partials/gh-data.html` fetches the GitHub API during
+- **Build time**: `layouts/partials/gh-data.html` fetches the GitHub API during
   the Hugo build and bakes a snapshot into the HTML. Works with JS disabled. A
   scheduled workflow rebuilds twice daily so the snapshot doesn't drift.
-- **Client side** — `assets/js/stats.js` refreshes the volatile fields (stars,
+- **Client side**: `assets/js/stats.js` refreshes the volatile fields (stars,
   forks, issues) on load, overwriting the baked value. On any failure the baked
-  snapshot simply remains.
+  snapshot remains.
 
 Until `routewright/routewright` is public, both paths fall back to
-`data/github.json` and render `—`; the numbers light up automatically once the
+`data/github.json` and render `·`; the numbers light up automatically once the
 repo exists. No code change needed.
 
 The build authenticates with `$GITHUB_TOKEN` to dodge the API rate limit. The
@@ -55,5 +55,5 @@ set a `GH_STATS_TOKEN` secret only if the repo must be read while private.
 
 Pushing to `main` triggers `.github/workflows/deploy.yml` (build → Pages). The
 custom domain (`static/CNAME` = `routewright.io`) requires apex DNS `A`/`AAAA`
-records pointing at GitHub Pages, plus a `www` `CNAME` — configured at the
+records pointing at GitHub Pages, plus a `www` `CNAME`, configured at the
 registrar, not here.

@@ -1,17 +1,55 @@
 {{- $repoURL := printf "https://github.com/%s/%s" .Site.Params.ghOwner .Site.Params.ghRepo -}}
+{{- $home := relURL "/" -}}
 <footer class="footer">
-  <div class="wrap footer__inner">
-    <a href="{{ "/" | relURL }}" class="footer__brand">routewright</a>
-    <nav class="footer__nav" aria-label="Footer">
-      <a href="{{ "/" | relURL }}#why">Why</a>
-      <a href="{{ "/" | relURL }}#how">How it works</a>
-      <a href="{{ "/roadmap/" | relURL }}">Roadmap</a>
-      <a href="{{ .Site.Params.docsURL }}">Docs</a>
-      <a href="{{ $repoURL }}" rel="noopener">GitHub</a>
+  <div class="wrap footer__top">
+    <div class="footer__brand-block">
+      <a href="{{ $home }}" class="footer__brand" aria-label="Routewright home">
+        {{ partial "logo.html" (dict "class" "brand__mark") }}
+        <span>routewright</span>
+      </a>
+      <p class="footer__tagline">Routewright is a Kubernetes CNI built entirely on standard Linux. It speaks BGP to your fabric, routes pods through the kernel FIB, load-balances with IPVS, and filters with nftables. No eBPF, no overlay, just the network you already know how to run.</p>
+    </div>
+
+    <nav class="footer__col" aria-label="Product">
+      <h4>Product</h4>
+      <ul>
+        <li><a href="{{ $home }}#why">Why</a></li>
+        <li><a href="{{ $home }}#how">How it works</a></li>
+        <li><a href="{{ $home }}#design">Guarantees</a></li>
+        <li><a href="{{ relURL "/roadmap/" }}">Roadmap</a></li>
+      </ul>
     </nav>
-    <p class="footer__note">
-      Routewright is a Kubernetes CNI built on standard Linux only — no eBPF, no overlay.
-      Apache-2.0. Early development; interfaces and roadmap may change.
-    </p>
+
+    <nav class="footer__col" aria-label="Resources">
+      <h4>Resources</h4>
+      <ul>
+        <li><a href="{{ .Site.Params.docsURL }}">Documentation <span class="ext">↗</span></a></li>
+        <li><a href="{{ $home }}#how">Architecture</a></li>
+        <li><a href="{{ $home }}#design">Invariants</a></li>
+      </ul>
+    </nav>
+
+    <nav class="footer__col" aria-label="Project">
+      <h4>Project</h4>
+      <ul>
+        <li><a href="{{ $repoURL }}" rel="noopener">GitHub <span class="ext">↗</span></a></li>
+        <li><a href="{{ $repoURL }}/issues" rel="noopener">Issues <span class="ext">↗</span></a></li>
+        <li><a href="{{ $repoURL }}/blob/{{ .Site.Params.ghBranch }}/CONTRIBUTING.md" rel="noopener">Contributing <span class="ext">↗</span></a></li>
+        <li><a href="{{ $repoURL }}/blob/{{ .Site.Params.ghBranch }}/LICENSE" rel="noopener">License <span class="ext">↗</span></a></li>
+      </ul>
+    </nav>
+  </div>
+
+  <div class="wrap footer__bar">
+    <div class="footer__legal">
+      <span>© {{ now.Year }} The Routewright Authors</span>
+      <span class="sep">·</span>
+      <span>Apache-2.0 licensed</span>
+      <span class="sep">·</span>
+      <span>Early development, interfaces may change</span>
+    </div>
+    <a class="footer__gh" href="{{ $repoURL }}" rel="noopener" aria-label="Routewright on GitHub">
+      <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8a8 8 0 0 0 5.47 7.59c.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.6 7.6 0 0 1 2-.27c.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8 8 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
+    </a>
   </div>
 </footer>

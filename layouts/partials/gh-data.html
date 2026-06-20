@@ -15,7 +15,7 @@
 {{- end -}}
 {{- with resources.GetRemote $url $opts -}}
   {{- if .Err -}}
-    {{- warnf "gh-data: fetch failed for %s (%s) — using fixture" $url .Err -}}
+    {{- warnf "gh-data: fetch failed for %s (%s), using fixture" $url .Err -}}
   {{- else -}}
     {{- $j := .Content | transform.Unmarshal -}}
     {{- if and $j (isset $j "full_name") -}}
@@ -24,6 +24,6 @@
     {{- end -}}
   {{- end -}}
 {{- else -}}
-  {{- warnf "gh-data: no response for %s — using fixture" $url -}}
+  {{- warnf "gh-data: no response for %s, using fixture" $url -}}
 {{- end -}}
 {{- return (dict "live" $live "d" $d) -}}

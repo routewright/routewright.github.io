@@ -1,7 +1,7 @@
 {{ define "main" }}
 <section class="section">
   <div class="wrap fx">
-    <p class="kicker">{{ .Params.kicker | default "Roadmap" }}</p>
+    <p class="kicker kicker--tight">{{ .Params.kicker | default "Roadmap" }}</p>
     <h1 class="heading" style="font-size:clamp(2rem,5vw,3rem);max-width:24ch">{{ .Title }}</h1>
     {{ with .Params.lede }}<p class="lede">{{ . }}</p>{{ end }}
 
@@ -18,18 +18,20 @@
           {{ else if eq .state "active" }}<span class="badge badge--active">in progress</span>
           {{ else }}<span class="badge">planned</span>{{ end }}
         </div>
-        <div class="milestone__body">
-          {{ with .body }}<p>{{ . }}</p>{{ end }}
+        {{ with .body }}<div class="milestone__lead"><p>{{ . }}</p></div>{{ end }}
+        <div class="milestone__detail">
           {{ with .items }}
           <ul>{{ range . }}<li>{{ . }}</li>{{ end }}</ul>
           {{ end }}
+          {{ with .exit }}<p class="milestone__meta"><span class="milestone__lbl">Exit</span> {{ . }}</p>{{ end }}
+          {{ with .proof }}<p class="milestone__meta"><span class="milestone__lbl milestone__lbl--proof">Proof</span> {{ . }}</p>{{ end }}
         </div>
       </article>
       {{ end }}
     </div>
     {{ end }}
 
-    <p class="divider-note">— roadmap is sequenced, not dated · status reflects what is merged and proven —</p>
+    <p class="divider-note">roadmap is sequenced, not dated · status reflects what is merged and proven</p>
   </div>
 </section>
 {{ end }}
